@@ -1,12 +1,12 @@
 {
-  "name": "DevProfile Pro - Hồ Sơ Cá Nhân & CV",
-  "short_name": "DevProfile",
-  "description": "Nền tảng tạo, chỉnh sửa và trình diễn hồ sơ cá nhân chuyên nghiệp, hỗ trợ PWA cài đặt trên mọi thiết bị và hoạt động ngoại tuyến.",
+  "name": "Nguyễn Văn Cường - Profile & CV",
+  "short_name": "CườngProfile",
+  "description": "Hồ sơ cá nhân và Portfolio chuyên nghiệp, hỗ trợ PWA cài đặt trên mọi thiết bị và hoạt động ngoại tuyến.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0b0f19",
-  "theme_color": "#6366f1",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "lang": "vi",
   "icons": [
@@ -31,7 +31,6 @@
   ],
   "categories": [
     "productivity",
-    "business",
-    "utilities"
+    "business"
   ]
 }
