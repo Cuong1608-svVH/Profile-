@@ -55,11 +55,6 @@
           Đăng / Sửa Profile
         </button>
 
-        <!-- Deploy Guide Modal Trigger -->
-        <button id="deployGuideBtn" class="btn btn-outline btn-sm" title="Hướng dẫn đưa web lên internet">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Public Web
-        </button>
 
         <!-- Print CV / PDF -->
         <button id="printCvBtn" class="btn btn-icon" title="In / Lưu PDF">
@@ -246,8 +241,8 @@
         </div>
 
         <div class="qr-card">
-          <div class="qr-box">
-            <img id="profileQrImage" src="" alt="Mã QR Profile" width="160" height="160">
+          <div class="qr-box" id="profileQrBox" style="min-width: 170px; min-height: 170px; display: flex; align-items: center; justify-content: center; background: #ffffff; padding: 12px; border-radius: var(--radius-md);">
+            <div id="profileQrContainer"></div>
           </div>
           <div>
             <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">Quét mã mở trên di động</h4>
@@ -367,79 +362,12 @@
     </div>
   </div>
 
-  <!-- Deploy & Public Guide Modal -->
-  <div id="deployModal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 class="modal-title">🚀 Hướng Dẫn Public Website Lên Toàn Cầu</h3>
-        <button id="closeDeployModal" class="btn btn-icon">✕</button>
-      </div>
-      <div class="modal-body">
-        <p style="color: var(--text-secondary); font-size: 0.9rem;">
-          Website của bạn đã được tối ưu hoàn toàn cho PWA với đầy đủ Service Worker, Manifest và HTTPS caching. Bạn có thể đưa website lên internet miễn phí vĩnh viễn với một trong các cách sau:
-        </p>
-
-        <div class="deploy-steps">
-          
-          <!-- Cách 1: Vercel -->
-          <div class="step-box">
-            <div class="step-title">
-              <span>Cách 1: Vercel (Khuyên dùng - Nhanh nhất 60s)</span>
-            </div>
-            <p style="font-size: 0.85rem; color: var(--text-secondary);">
-              Mở PowerShell trong thư mục này và chạy lệnh:
-            </p>
-            <div class="code-snippet">
-              <span class="code-text">npx vercel</span>
-              <button class="copy-btn" data-copy="npx vercel">Chép</button>
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;">
-              Hệ thống sẽ hỏi vài câu hỏi ngắn (nhấn Enter để nhận cấu hình mặc định) và cấp cho bạn link HTTPS miễn phí dạng <code>https://ten-du-an.vercel.app</code>.
-            </p>
-          </div>
-
-          <!-- Cách 2: Netlify Drop -->
-          <div class="step-box">
-            <div class="step-title">
-              <span>Cách 2: Netlify Drop (Kéo thả không cần gõ lệnh)</span>
-            </div>
-            <p style="font-size: 0.85rem; color: var(--text-secondary);">
-              1. Truy cập trang web: <a href="https://app.netlify.com/drop" target="_blank" style="color: var(--accent);">app.netlify.com/drop</a><br>
-              2. Kéo toàn bộ thư mục <strong>d:\Profile</strong> thả vào khung tải lên của Netlify.<br>
-              3. Bạn sẽ có ngay trang web trực tuyến trong 10 giây!
-            </p>
-          </div>
-
-          <!-- Cách 3: GitHub Pages -->
-          <div class="step-box">
-            <div class="step-title">
-              <span>Cách 3: GitHub Pages (Lưu trữ kèm mã nguồn)</span>
-            </div>
-            <p style="font-size: 0.85rem; color: var(--text-secondary);">
-              Đẩy mã nguồn lên kho chứa GitHub của bạn:
-            </p>
-            <div class="code-snippet">
-              <span class="code-text">git init; git add .; git commit -m "Initial DevProfile PWA"; git branch -M main</span>
-              <button class="copy-btn" data-copy="git init; git add .; git commit -m 'Initial DevProfile PWA'; git branch -M main">Chép</button>
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem;">
-              Sau khi đẩy lên GitHub, vào <strong>Settings</strong> -> <strong>Pages</strong> -> chọn <strong>Deploy from branch: main / root</strong>.
-            </p>
-          </div>
-
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button id="closeDeployModalBtn" class="btn btn-primary" onclick="document.getElementById('deployModal').classList.remove('show')">Đã hiểu</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Toast Notification Container -->
   <div id="toastContainer"></div>
 
   <!-- Application Scripts -->
   <script src="js/pwa.js"></script>
+  <script src="js/qrcode.min.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

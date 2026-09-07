@@ -13,7 +13,7 @@ const DEFAULT_PROFILE = {
   phone: "+84 905 966 212 ",
   website: "https://github.com/Cuong1608-svVH",
   bio: "Kỹ sư phần mềm với hơn 5 năm kinh nghiệm chuyên sâu về React, Node.js, TypeScript và Cloud Architecture (AWS/GCP). Đam mê xây dựng các sản phẩm số có độ tải cao, tối ưu trải nghiệm người dùng (UX) và hiệu năng web vượt trội.",
-  avatar: "assets/avatar.jpg",
+  avatar: "Untitled.png",
   stats: {
     experience: "5+ Năm",
     projects: "38+ Dự án",
@@ -154,15 +154,20 @@ function decodeProfileFromHash(hashStr) {
 function getShareableUrl() {
   const baseUrl = window.location.origin + window.location.pathname;
   if (!currentProfile) return baseUrl;
-  
+
+  // If current profile matches default profile, clean base URL is the share URL
+  if (JSON.stringify(currentProfile) === JSON.stringify(DEFAULT_PROFILE)) {
+    return baseUrl;
+  }
+
   // Clone profile data
   const shareData = JSON.parse(JSON.stringify(currentProfile));
-  
+
   // If avatar is huge raw base64 (> 15000 chars), fall back to default avatar to keep QR code scannable
   if (shareData.avatar && shareData.avatar.startsWith('data:') && shareData.avatar.length > 15000) {
-    shareData.avatar = 'assets/avatar.jpg';
+    shareData.avatar = 'Untitled.png';
   }
-  
+
   const hash = encodeProfileToHash(shareData);
   return `${baseUrl}#data=${hash}`;
 }
@@ -211,7 +216,7 @@ function loadProfileData() {
 function saveProfileData(notify = true) {
   try {
     localStorage.setItem('devprofile_data', JSON.stringify(currentProfile));
-    
+
     // Update share URL in browser history without page reload
     const shareUrl = getShareableUrl();
     window.history.replaceState(null, '', shareUrl);
@@ -470,37 +475,7 @@ function initModals() {
     });
   }
 
-  // Deploy Guide Modal
-  const deployGuideBtn = document.getElementById('deployGuideBtn');
-  const deployModal = document.getElementById('deployModal');
-  const closeDeployBtn = document.getElementById('closeDeployModal');
-  const closeDeployModalBtn = document.getElementById('closeDeployModalBtn');
 
-  const openDeployModal = () => {
-    deployModal.classList.add('show');
-    document.body.classList.add('modal-open');
-  };
-
-  const closeDeployModal = () => {
-    if (deployModal) deployModal.classList.remove('show');
-    document.body.classList.remove('modal-open');
-  };
-
-  if (deployGuideBtn && deployModal) {
-    deployGuideBtn.addEventListener('click', openDeployModal);
-  }
-  if (closeDeployBtn && deployModal) {
-    closeDeployBtn.addEventListener('click', closeDeployModal);
-  }
-  if (closeDeployModalBtn && deployModal) {
-    closeDeployModalBtn.addEventListener('click', closeDeployModal);
-  }
-
-  if (deployModal) {
-    deployModal.addEventListener('click', (e) => {
-      if (e.target === deployModal) closeDeployModal();
-    });
-  }
 
   // Print CV button
   const printCvBtn = document.getElementById('printCvBtn');
@@ -684,15 +659,40 @@ function initQrCode() {
 }
 
 function updateQrCode() {
-  const qrImage = document.getElementById('profileQrImage');
+  const qrContainer = document.getElementById('profileQrContainer');
   const qrInput = document.getElementById('qrShareUrl');
-  if (!qrImage) return;
+  if (!qrContainer) return;
 
   const shareUrl = getShareableUrl();
   if (qrInput) {
     qrInput.value = shareUrl;
   }
-  qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}&color=0b0f19`;
+
+  qrContainer.innerHTML = '';
+
+  if (typeof QRCode !== 'undefined') {
+    try {
+      new QRCode(qrContainer, {
+        text: shareUrl,
+        width: 160,
+        height: 160,
+        colorDark: '#0b0f19',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.L
+      });
+    } catch (e) {
+      console.warn('QRCode generation fallback to clean URL:', e);
+      const cleanUrl = window.location.origin + window.location.pathname;
+      new QRCode(qrContainer, {
+        text: cleanUrl,
+        width: 160,
+        height: 160,
+        colorDark: '#0b0f19',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+  }
 }
 
 // Helper: Compress uploaded avatar image using canvas (keeps QR code compact)

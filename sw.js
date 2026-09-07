@@ -1,5 +1,5 @@
 // Service Worker for DevProfile PWA
-const CACHE_NAME = 'devprofile-pwa-v1';
+const CACHE_NAME = 'devprofile-pwa-v2';
 
 const STATIC_ASSETS = [
   './',
@@ -7,10 +7,13 @@ const STATIC_ASSETS = [
   './css/style.css',
   './js/app.js',
   './js/pwa.js',
+  './js/qrcode.min.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
+  './Untitled.png',
+  './assets/Untitled.png',
   './assets/avatar.jpg',
   './assets/project-saas.jpg',
   './assets/project-fintech.jpg'
