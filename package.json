@@ -1,0 +1,20 @@
+{
+  "name": "devprofile-pwa",
+  "version": "1.0.0",
+  "description": "Website đăng và trình diễn hồ sơ cá nhân hiện đại chuẩn PWA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "deploy": "npx vercel"
+  },
+  "keywords": [
+    "pwa",
+    "profile",
+    "portfolio",
+    "resume",
+    "cv"
+  ],
+  "author": "DevProfile Studio",
+  "license": "MIT"
+}
