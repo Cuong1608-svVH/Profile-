@@ -143,6 +143,10 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
             Xem Dự án
           </a>
+          <button id="heroShareBtn" class="btn btn-outline" title="Sao chép link chia sẻ đồng bộ đa thiết bị">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            Chia sẻ Profile
+          </button>
         </div>
       </div>
     </section>
@@ -247,9 +251,13 @@
           </div>
           <div>
             <h4 style="font-size: 1rem; margin-bottom: 0.25rem;">Quét mã mở trên di động</h4>
-            <p style="font-size: 0.8rem; color: var(--text-secondary);">Dùng camera điện thoại để quét và lưu hồ sơ PWA trực tiếp.</p>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Dùng camera điện thoại để quét và lưu toàn bộ hồ sơ của bạn trực tiếp!</p>
           </div>
-          <input type="text" id="qrShareUrl" class="form-input" style="font-size: 0.8rem; text-align: center;" placeholder="Link profile...">
+          <input type="text" id="qrShareUrl" class="form-input" style="font-size: 0.78rem; text-align: center;" placeholder="Link profile..." readonly>
+          <button id="copyShareUrlBtn" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Sao chép Link Đồng bộ
+          </button>
         </div>
       </div>
     </section>
@@ -272,9 +280,14 @@
         <div class="modal-body">
           
           <div class="form-group">
-            <label class="form-label">Tải lên Ảnh đại diện (Avatar)</label>
-            <input type="file" id="avatarUpload" class="form-input" accept="image/*">
-            <small style="color: var(--text-muted); font-size: 0.75rem;">Hỗ trợ ảnh JPG, PNG. Ảnh sẽ được tự động lưu vào trình duyệt của bạn.</small>
+            <label class="form-label">Ảnh đại diện (Avatar)</label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <input type="file" id="avatarUpload" class="form-input" accept="image/*" style="flex: 1; min-width: 200px;">
+              <button type="button" id="useGithubAvatarBtn" class="btn btn-secondary btn-sm" title="Tự động lấy avatar từ GitHub URL">
+                Dùng avatar GitHub
+              </button>
+            </div>
+            <small style="color: var(--text-muted); font-size: 0.75rem;">Mẹo: Ảnh tải lên sẽ được tự động tối ưu để quét mã QR và chia sẻ sang mọi điện thoại.</small>
           </div>
 
           <div class="form-row">

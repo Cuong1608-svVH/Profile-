@@ -5,13 +5,13 @@
 
 // Default rich developer profile data
 const DEFAULT_PROFILE = {
-  name: "Nguyễn Hoàng Minh",
+  name: "Nguyễn Văn Cường",
   title: "Senior Fullstack Developer & Cloud Architect",
   status: "Sẵn sàng nhận dự án mới (Available for Hire)",
-  location: "Hà Nội, Việt Nam",
+  location: "Đà Nẵng , Việt Nam",
   email: "hoangminh.dev@example.com",
-  phone: "+84 987 654 321",
-  website: "https://github.com",
+  phone: "+84 905 966 212 ",
+  website: "https://github.com/Cuong1608-svVH",
   bio: "Kỹ sư phần mềm với hơn 5 năm kinh nghiệm chuyên sâu về React, Node.js, TypeScript và Cloud Architecture (AWS/GCP). Đam mê xây dựng các sản phẩm số có độ tải cao, tối ưu trải nghiệm người dùng (UX) và hiệu năng web vượt trội.",
   avatar: "assets/avatar.jpg",
   stats: {
@@ -20,7 +20,7 @@ const DEFAULT_PROFILE = {
     satisfaction: "99.8% Hài lòng"
   },
   socials: {
-    github: "https://github.com",
+    github: "https://github.com/Cuong1608-svVH",
     linkedin: "https://linkedin.com",
     twitter: "https://x.com",
     facebook: "https://facebook.com"
@@ -60,16 +60,16 @@ const DEFAULT_PROFILE = {
       desc: "Nền tảng SaaS phân tích và giám sát dữ liệu người dùng theo thời gian thực với hơn 100,000 sự kiện mỗi giây, kiến trúc Microservices và giao diện tương tác trực quan.",
       image: "assets/project-saas.jpg",
       tags: ["React", "TypeScript", "Node.js", "Redis", "WebSockets"],
-      liveUrl: "https://github.com",
-      repoUrl: "https://github.com"
+      liveUrl: "https://github.com/Cuong1608-svVH",
+      repoUrl: "https://github.com/Cuong1608-svVH"
     },
     {
       title: "Neonex - Crypto & Fintech Mobile Web App",
       desc: "Ứng dụng ví thanh toán kỹ thuật số thế hệ mới, hỗ trợ giao dịch đa tài sản, thẻ ảo tương tác 3D và chuẩn xác thực sinh trắc học PWA cài đặt trực tiếp trên di động.",
       image: "assets/project-fintech.jpg",
       tags: ["PWA", "JavaScript", "Vue.js", "Tailwind", "REST API"],
-      liveUrl: "https://github.com",
-      repoUrl: "https://github.com"
+      liveUrl: "https://github.com/Cuong1608-svVH",
+      repoUrl: "https://github.com/Cuong1608-svVH"
     }
   ],
   experiences: [
@@ -121,9 +121,80 @@ document.addEventListener('DOMContentLoaded', () => {
   renderApp();
 });
 
-// 1. Data Management (LocalStorage)
+// 1. Data Management (LocalStorage & URL Sync)
+function encodeProfileToHash(data) {
+  try {
+    const json = JSON.stringify(data);
+    const utf8Bytes = new TextEncoder().encode(json);
+    let binary = '';
+    for (let i = 0; i < utf8Bytes.byteLength; i++) {
+      binary += String.fromCharCode(utf8Bytes[i]);
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  } catch (e) {
+    console.error('Error encoding profile to hash:', e);
+    return '';
+  }
+}
+
+function decodeProfileFromHash(hashStr) {
+  try {
+    let base64 = hashStr.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) base64 += '=';
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch (e) {
+    console.error('Error decoding profile from hash:', e);
+    return null;
+  }
+}
+
+function getShareableUrl() {
+  const baseUrl = window.location.origin + window.location.pathname;
+  if (!currentProfile) return baseUrl;
+  
+  // Clone profile data
+  const shareData = JSON.parse(JSON.stringify(currentProfile));
+  
+  // If avatar is huge raw base64 (> 15000 chars), fall back to default avatar to keep QR code scannable
+  if (shareData.avatar && shareData.avatar.startsWith('data:') && shareData.avatar.length > 15000) {
+    shareData.avatar = 'assets/avatar.jpg';
+  }
+  
+  const hash = encodeProfileToHash(shareData);
+  return `${baseUrl}#data=${hash}`;
+}
+
 function loadProfileData() {
   try {
+    // Check if URL contains share data in hash or query param
+    let urlData = null;
+    const hash = window.location.hash;
+    if (hash && hash.includes('data=')) {
+      const paramStr = hash.split('data=')[1].split('&')[0];
+      urlData = decodeProfileFromHash(paramStr);
+    } else {
+      const searchParams = new URLSearchParams(window.location.search);
+      const queryData = searchParams.get('data') || searchParams.get('p');
+      if (queryData) {
+        urlData = decodeProfileFromHash(queryData);
+      }
+    }
+
+    if (urlData && urlData.name) {
+      currentProfile = { ...DEFAULT_PROFILE, ...urlData };
+      saveProfileData(false); // Automatically persist on this new device!
+      setTimeout(() => {
+        if (window.showNotification) {
+          window.showNotification('🎉 Đã đồng bộ thành công hồ sơ vào thiết bị này!', 'success');
+        }
+      }, 600);
+      return;
+    }
+
+    // Otherwise load from localStorage
     const saved = localStorage.getItem('devprofile_data');
     if (saved) {
       currentProfile = JSON.parse(saved);
@@ -132,7 +203,7 @@ function loadProfileData() {
       saveProfileData(false);
     }
   } catch (e) {
-    console.error('Error loading profile from localStorage:', e);
+    console.error('Error loading profile:', e);
     currentProfile = JSON.parse(JSON.stringify(DEFAULT_PROFILE));
   }
 }
@@ -140,14 +211,19 @@ function loadProfileData() {
 function saveProfileData(notify = true) {
   try {
     localStorage.setItem('devprofile_data', JSON.stringify(currentProfile));
+    
+    // Update share URL in browser history without page reload
+    const shareUrl = getShareableUrl();
+    window.history.replaceState(null, '', shareUrl);
+
     if (notify && window.showNotification) {
-      window.showNotification('Đã lưu hồ sơ thành công!', 'success');
+      window.showNotification('Đã lưu hồ sơ và tạo liên kết đồng bộ!', 'success');
     }
     renderApp();
   } catch (e) {
     console.error('Error saving profile:', e);
     if (notify && window.showNotification) {
-      window.showNotification('Không thể lưu hồ sơ (Bộ nhớ đầy hoặc lỗi)!', 'warning');
+      window.showNotification('Không thể lưu hồ sơ!', 'warning');
     }
   }
 }
@@ -489,22 +565,38 @@ function initFormHandlers() {
     });
   }
 
-  // Avatar file input handler
+  // Avatar file input handler with auto-compression
   const avatarUpload = document.getElementById('avatarUpload');
   if (avatarUpload) {
     avatarUpload.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          currentProfile.avatar = event.target.result;
+        compressAndSetAvatar(file);
+      }
+    });
+  }
+
+  // Use GitHub Avatar button
+  const useGithubAvatarBtn = document.getElementById('useGithubAvatarBtn');
+  if (useGithubAvatarBtn) {
+    useGithubAvatarBtn.addEventListener('click', () => {
+      const githubInput = document.getElementById('editGithub');
+      let url = (githubInput && githubInput.value.trim()) || (currentProfile.socials && currentProfile.socials.github) || '';
+      if (!url) {
+        url = prompt('Nhập link GitHub hoặc username của bạn: (Ví dụ: https://github.com/Cuong1608-svVH)');
+      }
+      if (url) {
+        const parts = url.replace(/\/$/, '').split('/');
+        const username = parts[parts.length - 1];
+        if (username) {
+          currentProfile.avatar = `https://github.com/${username}.png`;
           saveProfileData(false);
           document.getElementById('profileAvatar').src = currentProfile.avatar;
+          if (githubInput) githubInput.value = `https://github.com/${username}`;
           if (window.showNotification) {
-            window.showNotification('Đã cập nhật ảnh đại diện mới!', 'success');
+            window.showNotification(`Đã cập nhật ảnh đại diện GitHub của @${username}!`, 'success');
           }
-        };
-        reader.readAsDataURL(file);
+        }
       }
     });
   }
@@ -565,12 +657,29 @@ function initFormHandlers() {
   }
 }
 
-// 5. QR Code for Profile Sharing
+// 5. QR Code & Profile Sharing
 function initQrCode() {
-  const qrInput = document.getElementById('qrShareUrl');
-  if (qrInput) {
-    qrInput.value = window.location.href;
-    qrInput.addEventListener('input', updateQrCode);
+  const copyBtn = document.getElementById('copyShareUrlBtn');
+  const heroShareBtn = document.getElementById('heroShareBtn');
+
+  const copyUrl = () => {
+    const url = getShareableUrl();
+    navigator.clipboard.writeText(url).then(() => {
+      if (window.showNotification) {
+        window.showNotification('📋 Đã sao chép link đồng bộ! Bạn có thể gửi link này hoặc mở trên điện thoại.', 'success');
+      }
+    }).catch(() => {
+      prompt('Sao chép liên kết chia sẻ của bạn:', url);
+    });
+  };
+
+  if (copyBtn) copyBtn.addEventListener('click', copyUrl);
+  if (heroShareBtn) {
+    heroShareBtn.addEventListener('click', () => {
+      copyUrl();
+      const qrSection = document.getElementById('contactSection');
+      if (qrSection) qrSection.scrollIntoView({ behavior: 'smooth' });
+    });
   }
 }
 
@@ -579,8 +688,50 @@ function updateQrCode() {
   const qrInput = document.getElementById('qrShareUrl');
   if (!qrImage) return;
 
-  const url = (qrInput && qrInput.value) || window.location.href;
-  qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(url)}&color=0b0f19`;
+  const shareUrl = getShareableUrl();
+  if (qrInput) {
+    qrInput.value = shareUrl;
+  }
+  qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}&color=0b0f19`;
+}
+
+// Helper: Compress uploaded avatar image using canvas (keeps QR code compact)
+function compressAndSetAvatar(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxDim = 120;
+      let width = img.width;
+      let height = img.height;
+      if (width > height) {
+        if (width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        }
+      } else {
+        if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      currentProfile.avatar = canvas.toDataURL('image/jpeg', 0.7);
+      saveProfileData(false);
+      document.getElementById('profileAvatar').src = currentProfile.avatar;
+      if (window.showNotification) {
+        window.showNotification('Đã cập nhật và tối ưu ảnh đại diện mới!', 'success');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 // Helper: Escape HTML
